@@ -1,6 +1,8 @@
 package com.example.joomtest.data.dto
 
+import java.time.LocalDateTime
+
 data class JwtHolder(
-    var token: String? = null,
-    var expired: String? = null
+    var token: String,
+    var expired: LocalDateTime
 )

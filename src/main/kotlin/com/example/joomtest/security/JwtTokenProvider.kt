@@ -45,7 +45,7 @@ class JwtTokenProvider(
 
         return JwtHolder(
             token = token,
-            expired = validityDate.convertToLocalDateTime().toString()
+            expired = validityDate.convertToLocalDateTime()
         )
     }
 

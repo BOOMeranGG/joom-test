@@ -119,6 +119,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("com.github.ben-manes.caffeine:caffeine:3.0.3")
 
+    // Swagger
+    implementation("io.springfox:springfox-boot-starter:3.0.0")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
 }
