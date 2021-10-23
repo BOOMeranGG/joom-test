@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: 'jdbc:postgresql://ec2-54-216-48-43.eu-west-1.compute.amazonaws.com:5432/d7fa1v3opctc8o'
-    username: tcoquqmanznuot
-    password: bcb307b99214272e30aae6b2955e7e559830e32f9f924a2e88a648027f2c0461
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   jooq:
     sql-dialect: postgres
     level:
