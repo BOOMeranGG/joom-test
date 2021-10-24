@@ -26,4 +26,11 @@ class CalendarRepository(
             .fetchOne { record -> record[calendar.ID] }
             ?: throw RuntimeException("")
     }
+
+    fun isExistById(id: Int): Boolean {
+        return dslContext.fetchExists(
+            dslContext.selectFrom(calendar)
+                .where(calendar.ID.eq(id))
+        )
+    }
 }

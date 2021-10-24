@@ -10,21 +10,23 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.time.OffsetDateTime
 
-@Api(tags = ["События календаря"])
+@Api(tags = ["API календаря"])
+@RequestMapping("/calendar")
 @RestController
-class ActionController(
+class CalendarController(
     private val actionService: ActionService
 ) {
 
     @ApiOperation(
         value = "Получение неподтверждённых встреч текущего пользователя"
     )
-    @GetMapping("/actions/not_confirmed")
-    fun getNotConfirmedActions(): ResponseEntity<List<ActionResponse>> {
+    @GetMapping("/meetings/not_confirmed")
+    fun getNotConfirmedMeetings(): ResponseEntity<List<ActionResponse>> {
         val userInfo = SecurityContextHolder.getContext().authentication.principal as UserInfo
 
         return ResponseEntity.ok(actionService.getNotConfirmedMeetingActions(userInfo))
@@ -33,8 +35,8 @@ class ActionController(
     @ApiOperation(
         value = "Получение подтверждённых встреч текущего пользователя"
     )
-    @GetMapping("/actions/confirmed")
-    fun getConfirmedActions(
+    @GetMapping("/meetings/confirmed")
+    fun getConfirmedMeetings(
         @RequestParam("date_to")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         dateTo: OffsetDateTime
@@ -47,7 +49,7 @@ class ActionController(
     @ApiOperation(
         value = "Подтверждение/отклонение встречи"
     )
-    @PutMapping("/action/confirm")
+    @PutMapping("/meeting/confirm")
     fun setConfirmationAction(
         @RequestParam("action_id") actionId: Int,
         @RequestParam("is_confirmed") isConfirmed: Boolean

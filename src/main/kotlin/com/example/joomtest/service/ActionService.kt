@@ -15,13 +15,13 @@ class ActionService(
 
     fun getNotConfirmedMeetingActions(userInfo: UserInfo): List<ActionResponse> {
         return actionRepository.getNotConfirmed(userInfo.calendarId).map {
-            ActionMeetingMapper.mapRecordToResponse(it, actionTypeService)
+            ActionMeetingMapper.mapRecordToActionResponse(it, actionTypeService)
         }
     }
 
     fun getConfirmedMeetingActions(dateTo: OffsetDateTime, userInfo: UserInfo): List<ActionResponse> {
         return actionRepository.getConfirmed(userInfo.calendarId, dateTo).map {
-            ActionMeetingMapper.mapRecordToResponse(it, actionTypeService)
+            ActionMeetingMapper.mapRecordToActionResponse(it, actionTypeService)
         }
     }
 

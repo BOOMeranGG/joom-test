@@ -1,13 +1,9 @@
 package com.example.joomtest.data.dto.response
 
-data class MeetingResponse(
-    val description: String?,
-    val videoConferenceLink: String?,
-    val participantUsersInfo: List<UserMeetingInfoResponse>
-)
+import java.time.OffsetDateTime
+import java.util.UUID
 
-data class UserMeetingInfoResponse(
-    val email: String,
-    val calendarId: Int,
-    val isConfirmed: Boolean
+data class MeetingResponse(
+    val meetingGuid: UUID,
+    val date: OffsetDateTime
 )
