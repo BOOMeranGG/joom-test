@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
 
 @Service
-class DateTimeIntersectionService {
+class DateTimeIntervalService {
 
     fun calculateAvailableIntervalForParticipantActions(
         sortedByDateFromAndToActionsTime: List<ActionDateTimeHolder>,

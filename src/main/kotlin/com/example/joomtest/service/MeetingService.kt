@@ -25,11 +25,14 @@ class MeetingService(
     private val actionTypeService: ActionTypeService,
     private val calendarRepository: CalendarRepository,
     private val userRepository: UserRepository,
-    private val dateTimeIntersectionService: DateTimeIntersectionService
+    private val dateTimeIntervalService: DateTimeIntervalService
 ) {
 
     @Transactional
     fun createMeeting(meetingRequest: MeetingCreateRequest, userInfo: UserInfo): UUID {
+        if (meetingRequest.dateTimeFrom.isAfter(meetingRequest.dateTimeTo)) {
+            throw RuntimeException("DateTimeFrom cannot be after dateTimeTo")
+        }
         val meetingId = meetingRepository.save(MeetingRecord().also {
             it.userCreatorId = userInfo.userId
             it.description = meetingRequest.description
@@ -108,7 +111,7 @@ class MeetingService(
         val sortedByDateFromAndToActionsTime =
             meetingRepository.getMeetingsTimeOrderByDateFromAndTo(participantsCalendarIds)
 
-        return dateTimeIntersectionService.calculateAvailableIntervalForParticipantActions(
+        return dateTimeIntervalService.calculateAvailableIntervalForParticipantActions(
             sortedByDateFromAndToActionsTime = sortedByDateFromAndToActionsTime,
             timeInMinutes = timeInMinutes,
             fromDateTime = fromDateTime
