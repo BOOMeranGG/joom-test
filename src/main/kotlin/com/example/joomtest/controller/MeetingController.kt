@@ -83,4 +83,24 @@ class MeetingController(
 
         return ResponseEntity.ok(response)
     }
+
+    @ApiOperation(
+        value = "Ближайший свободный интервал времени для пользователей"
+    )
+    @GetMapping("/time_interval/available")
+    fun getAvailableIntervalForParticipants(
+        @RequestParam("participants_calendar_ids") participantsCalendarIds: List<Int>,
+        @RequestParam("time_in_minutes") timeInMinutes: Long,
+
+        @RequestParam("from_date_time", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        fromDateTime: OffsetDateTime?
+    ): ResponseEntity<OffsetDateTime> {
+        val response = meetingService.getAvailableIntervalForParticipants(
+            participantsCalendarIds = participantsCalendarIds,
+            timeInMinutes = timeInMinutes,
+            fromDateTime = fromDateTime
+        )
+
+        return ResponseEntity.ok(response)
+    }
 }

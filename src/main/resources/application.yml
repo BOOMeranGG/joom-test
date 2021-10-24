@@ -15,4 +15,4 @@ spring:
 jwt:
   token:
     secret: laskcnljgi0309euweo12er931ulaskcnljwi0309euweo12er931ulaskcnljwi0309euweo12er931ulaskcnljwi0309euweo12er931u
-    expired: 3600000
+    expired: 360000000

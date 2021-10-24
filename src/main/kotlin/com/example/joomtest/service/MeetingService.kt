@@ -24,7 +24,8 @@ class MeetingService(
     private val actionRepository: ActionRepository,
     private val actionTypeService: ActionTypeService,
     private val calendarRepository: CalendarRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val dateTimeIntersectionService: DateTimeIntersectionService
 ) {
 
     @Transactional
@@ -85,7 +86,8 @@ class MeetingService(
     }
 
     fun getMeetingsBetweenTimes(
-        calendarId: Int, timeFrom: OffsetDateTime,
+        calendarId: Int,
+        timeFrom: OffsetDateTime,
         timeTo: OffsetDateTime
     ): List<MeetingResponse> {
         // TODO: Добавить поддержку видимости встреч
@@ -96,5 +98,20 @@ class MeetingService(
 
         val meetingsResponse = meetingRepository.getMeetingsBetweenTimesFromCalendar(calendarId, timeFrom, timeTo)
         return meetingsResponse
+    }
+
+    fun getAvailableIntervalForParticipants(
+        participantsCalendarIds: List<Int>,
+        timeInMinutes: Long,
+        fromDateTime: OffsetDateTime?
+    ): OffsetDateTime {
+        val sortedByDateFromAndToActionsTime =
+            meetingRepository.getMeetingsTimeOrderByDateFromAndTo(participantsCalendarIds)
+
+        return dateTimeIntersectionService.calculateAvailableIntervalForParticipantActions(
+            sortedByDateFromAndToActionsTime = sortedByDateFromAndToActionsTime,
+            timeInMinutes = timeInMinutes,
+            fromDateTime = fromDateTime
+        )
     }
 }

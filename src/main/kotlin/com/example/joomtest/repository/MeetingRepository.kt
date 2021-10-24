@@ -1,5 +1,6 @@
 package com.example.joomtest.repository
 
+import com.example.joomtest.data.dto.ActionDateTimeHolder
 import com.example.joomtest.data.dto.response.MeetingResponse
 import com.example.joomtest.jooq.calendar.Tables.ACTION
 import com.example.joomtest.jooq.calendar.Tables.MEETING
@@ -43,8 +44,24 @@ class MeetingRepository(
             .where(ACTION.CALENDAR_ID.eq(calendarId))
             .and(MEETING.DATE_TIME_FROM.greaterThan(timeFrom))
             .and(MEETING.DATE_TIME_TO.lessThan(timeTo))
+            .and(ACTION.IS_CONFIRMED.isTrue)
             .fetch {
                 ActionMeetingMapper.mapRecordToMeetingResponse(it)
+            }
+    }
+
+    fun getMeetingsTimeOrderByDateFromAndTo(calendarIds: List<Int>): List<ActionDateTimeHolder> {
+        return dslContext.select(MEETING.DATE_TIME_FROM, MEETING.DATE_TIME_TO)
+            .from(MEETING)
+            .join(ACTION).on(ACTION.ACTION_ID.eq(MEETING.GUID))
+            .where(ACTION.CALENDAR_ID.`in`(calendarIds))
+            .and(ACTION.IS_CONFIRMED.isTrue)
+            .orderBy(MEETING.DATE_TIME_FROM, MEETING.DATE_TIME_TO)
+            .fetch { r ->
+                ActionDateTimeHolder(
+                    dateTimeFrom = r[MEETING.DATE_TIME_FROM],
+                    dateTimeTo = r[MEETING.DATE_TIME_TO],
+                )
             }
     }
 
