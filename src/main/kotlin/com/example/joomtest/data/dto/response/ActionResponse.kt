@@ -5,7 +5,8 @@ import java.time.OffsetDateTime
 data class ActionResponse(
     val actionId: Int,
     val isConfirmed: Boolean,
-    val date: OffsetDateTime,
+    val dateTimeFrom: OffsetDateTime,
+    val dateTimeTo: OffsetDateTime,
     val actionTypeId: Int,
     val actionTypeName: String
 )

@@ -19,8 +19,8 @@ class ActionService(
         }
     }
 
-    fun getConfirmedMeetingActions(dateTo: OffsetDateTime, userInfo: UserInfo): List<ActionResponse> {
-        return actionRepository.getConfirmed(userInfo.calendarId, dateTo).map {
+    fun getConfirmedMeetingActions(dateStartTo: OffsetDateTime, userInfo: UserInfo): List<ActionResponse> {
+        return actionRepository.getConfirmed(userInfo.calendarId, dateStartTo).map {
             ActionMeetingMapper.mapRecordToActionResponse(it, actionTypeService)
         }
     }

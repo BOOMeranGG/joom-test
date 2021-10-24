@@ -33,7 +33,8 @@ class MeetingService(
             it.userCreatorId = userInfo.userId
             it.description = meetingRequest.description
             it.videoConferenceLink = meetingRequest.videoConferenceLink
-            it.dateTime = meetingRequest.dateTime
+            it.dateTimeFrom = meetingRequest.dateTimeFrom
+            it.dateTimeTo = meetingRequest.dateTimeTo
         })
         val meetingActionTypeId = actionTypeService.getIdByName(ActionType.MEETING.value)
 

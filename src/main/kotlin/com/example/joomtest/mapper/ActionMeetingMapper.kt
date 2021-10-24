@@ -13,7 +13,8 @@ object ActionMeetingMapper {
         return ActionResponse(
             actionId = record[ACTION.ID],
             isConfirmed = record[ACTION.IS_CONFIRMED],
-            date = record[MEETING.DATE_TIME],
+            dateTimeFrom = record[MEETING.DATE_TIME_FROM],
+            dateTimeTo = record[MEETING.DATE_TIME_TO],
             actionTypeId = record[ACTION.TYPE_ID],
             actionTypeName = actionTypeService.getNameById(record[ACTION.TYPE_ID])
         )
@@ -22,7 +23,8 @@ object ActionMeetingMapper {
     fun mapRecordToMeetingResponse(record: Record): MeetingResponse {
         return MeetingResponse(
             meetingGuid = record[MEETING.GUID],
-            date = record[MEETING.DATE_TIME]
+            dateTimeFrom = record[MEETING.DATE_TIME_FROM],
+            dateTimeTo = record[MEETING.DATE_TIME_TO]
         )
     }
 }

@@ -247,12 +247,24 @@
             <table_catalog></table_catalog>
             <table_schema>calendar</table_schema>
             <table_name>meeting</table_name>
-            <column_name>date_time</column_name>
+            <column_name>date_time_from</column_name>
             <data_type>timestamp with time zone</data_type>
             <character_maximum_length>0</character_maximum_length>
             <numeric_precision>6</numeric_precision>
             <numeric_scale>0</numeric_scale>
             <ordinal_position>5</ordinal_position>
+            <is_nullable>false</is_nullable>
+        </column>
+        <column>
+            <table_catalog></table_catalog>
+            <table_schema>calendar</table_schema>
+            <table_name>meeting</table_name>
+            <column_name>date_time_to</column_name>
+            <data_type>timestamp with time zone</data_type>
+            <character_maximum_length>0</character_maximum_length>
+            <numeric_precision>6</numeric_precision>
+            <numeric_scale>0</numeric_scale>
+            <ordinal_position>6</ordinal_position>
             <is_nullable>false</is_nullable>
         </column>
         <column>
@@ -591,7 +603,7 @@
             <table_catalog></table_catalog>
             <table_schema>calendar</table_schema>
             <table_name>meeting</table_name>
-            <column_name>date_time</column_name>
+            <column_name>date_time_from</column_name>
             <ordinal_position>1</ordinal_position>
             <is_descending>false</is_descending>
         </index_column_usage>

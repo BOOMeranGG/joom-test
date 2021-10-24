@@ -4,7 +4,8 @@ import java.time.OffsetDateTime
 import javax.validation.constraints.NotEmpty
 
 data class MeetingCreateRequest(
-    val dateTime: OffsetDateTime,
+    val dateTimeFrom: OffsetDateTime,
+    val dateTimeTo: OffsetDateTime,
     @get:NotEmpty val participantCalendarIds: List<Int>,
     val description: String,
     val videoConferenceLink: String

@@ -39,13 +39,13 @@ class ActionRepository(
             .fetch()
     }
 
-    fun getConfirmed(calendarId: Int, dateTo: OffsetDateTime): List<Record> {
+    fun getConfirmed(calendarId: Int, dateStartTo: OffsetDateTime): List<Record> {
         return dslContext.select()
             .from(ACTION)
             .join(MEETING).on(MEETING.GUID.eq(ACTION.ACTION_ID))
             .where(ACTION.IS_CONFIRMED.isTrue)
             .and(ACTION.CALENDAR_ID.eq(calendarId))
-            .and(MEETING.DATE_TIME.lessThan(dateTo))
+            .and(MEETING.DATE_TIME_FROM.lessThan(dateStartTo))
             .fetch()
     }
 

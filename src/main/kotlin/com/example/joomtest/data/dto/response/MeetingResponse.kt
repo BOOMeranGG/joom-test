@@ -5,5 +5,6 @@ import java.util.UUID
 
 data class MeetingResponse(
     val meetingGuid: UUID,
-    val date: OffsetDateTime
+    val dateTimeFrom: OffsetDateTime,
+    val dateTimeTo: OffsetDateTime
 )

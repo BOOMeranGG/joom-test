@@ -37,13 +37,13 @@ class CalendarController(
     )
     @GetMapping("/meetings/confirmed")
     fun getConfirmedMeetings(
-        @RequestParam("date_to")
+        @RequestParam("dateStartTo")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        dateTo: OffsetDateTime
+        dateStartTo: OffsetDateTime
     ): ResponseEntity<List<ActionResponse>> {
         val userInfo = SecurityContextHolder.getContext().authentication.principal as UserInfo
 
-        return ResponseEntity.ok(actionService.getConfirmedMeetingActions(dateTo, userInfo))
+        return ResponseEntity.ok(actionService.getConfirmedMeetingActions(dateStartTo, userInfo))
     }
 
     @ApiOperation(

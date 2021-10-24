@@ -37,12 +37,12 @@ class MeetingRepository(
         timeFrom: OffsetDateTime,
         timeTo: OffsetDateTime
     ): List<MeetingResponse> {
-        return dslContext.select(MEETING.GUID, MEETING.DATE_TIME)
+        return dslContext.select(MEETING.GUID, MEETING.DATE_TIME_FROM, MEETING.DATE_TIME_TO)
             .from(MEETING) // В ACTION стоит UNIQUE CONSTRAINT (action_id, calendar_id)
             .join(ACTION).on(ACTION.ACTION_ID.eq(MEETING.GUID))
             .where(ACTION.CALENDAR_ID.eq(calendarId))
-            .and(MEETING.DATE_TIME.greaterThan(timeFrom))
-            .and(MEETING.DATE_TIME.lessThan(timeTo))
+            .and(MEETING.DATE_TIME_FROM.greaterThan(timeFrom))
+            .and(MEETING.DATE_TIME_TO.lessThan(timeTo))
             .fetch {
                 ActionMeetingMapper.mapRecordToMeetingResponse(it)
             }
