@@ -80,25 +80,18 @@ class MeetingService(
         val participantsCalendarIds = actions.map {
             it.calendarId
         }
-        val participantsIdToDelete = participantsCalendarIds.filterNot {
-            requestParticipants.contains(it)
-        }
-        val participantsToAdd = requestParticipants.filterNot {
-            participantsCalendarIds.contains(it)
-        }
 
-        val newActions = participantsToAdd
-            .map { participantCalendarId ->
-                Action().also {
-                    it.calendarId = participantCalendarId
-                    it.typeId = actions.first().typeId
-                    it.actionId = meeting.guid
-                }
-            }
-        actionRepository.saveAll(newActions)
-        participantsIdToDelete.forEach {
-            actionRepository.deleteByActionIdAndCalendarId(meeting.guid, it)
-        }
+        deleteParticipants(
+            requestParticipants = requestParticipants,
+            participantsCalendarIds = participantsCalendarIds,
+            meetingGuid = meeting.guid
+        )
+        saveNewParticipants(
+            requestParticipants = requestParticipants,
+            participantsCalendarIds = participantsCalendarIds,
+            typeId = actions.first().typeId,
+            meetingGuid = meeting.guid
+        )
     }
 
     fun getMeetingInfo(meetingGuid: UUID, userInfo: UserInfo): MeetingInfoResponse {
@@ -151,5 +144,39 @@ class MeetingService(
             timeInMinutes = timeInMinutes,
             fromDateTime = fromDateTime
         )
+    }
+
+    private fun saveNewParticipants(
+        requestParticipants: List<Int>,
+        participantsCalendarIds: List<Int>,
+        typeId: Int,
+        meetingGuid: UUID
+    ) {
+        val participantsToAdd = requestParticipants.filterNot {
+            participantsCalendarIds.contains(it)
+        }
+        val newActions = participantsToAdd
+            .map { participantCalendarId ->
+                Action().also {
+                    it.calendarId = participantCalendarId
+                    it.typeId = typeId
+                    it.actionId = meetingGuid
+                }
+            }
+        actionRepository.saveAll(newActions)
+    }
+
+    private fun deleteParticipants(
+        requestParticipants: List<Int>,
+        participantsCalendarIds: List<Int>,
+        meetingGuid: UUID
+    ) {
+        val participantsIdToDelete = participantsCalendarIds.filterNot {
+            requestParticipants.contains(it)
+        }
+
+        participantsIdToDelete.forEach {
+            actionRepository.deleteByActionIdAndCalendarId(meetingGuid, it)
+        }
     }
 }
