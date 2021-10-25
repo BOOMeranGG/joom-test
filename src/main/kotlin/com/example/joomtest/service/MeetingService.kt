@@ -33,9 +33,7 @@ class MeetingService(
 
     @Transactional
     fun createMeeting(meetingRequest: MeetingCreateRequest, userInfo: UserInfo): UUID {
-        if (meetingRequest.dateTimeFrom.isAfter(meetingRequest.dateTimeTo)) {
-            throw ServerException(ServerError.BAD_REQUEST, "DateTimeFrom cannot be after dateTimeTo")
-        }
+        validateMeetingCreateRequest(meetingRequest)
         val meetingId = meetingRepository.save(MeetingRecord().also {
             it.userCreatorId = userInfo.userId
             it.description = meetingRequest.description
@@ -189,6 +187,15 @@ class MeetingService(
 
         participantsIdToDelete.forEach {
             actionRepository.deleteByActionIdAndCalendarId(meetingGuid, it)
+        }
+    }
+
+    private fun validateMeetingCreateRequest(meetingRequest: MeetingCreateRequest) {
+        if (meetingRequest.dateTimeFrom.isAfter(meetingRequest.dateTimeTo)) {
+            throw ServerException(ServerError.BAD_REQUEST, "DateTimeFrom cannot be after dateTimeTo")
+        }
+        if (meetingRequest.dateTimeFrom.isBefore(OffsetDateTime.now())) {
+            throw ServerException(ServerError.BAD_REQUEST, "DateTimeFrom cannot be in past")
         }
     }
 }
