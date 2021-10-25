@@ -3,6 +3,7 @@ package com.example.joomtest.service
 import com.example.joomtest.data.dto.UserInfo
 import com.example.joomtest.data.dto.request.MeetingCreateRequest
 import com.example.joomtest.data.dto.request.MeetingDetailsRequest
+import com.example.joomtest.data.dto.request.MeetingParticipantsRequest
 import com.example.joomtest.data.dto.response.MeetingInfoResponse
 import com.example.joomtest.data.dto.response.MeetingResponse
 import com.example.joomtest.data.dto.response.UserMeetingInfoResponse
@@ -55,7 +56,8 @@ class MeetingService(
         return meetingId
     }
 
-    fun updateMeetingDetails(meetingDetailsRequest: MeetingDetailsRequest, userInfo: UserInfo) {
+    @Transactional
+    fun updateMeetingParticipants(meetingDetailsRequest: MeetingDetailsRequest, userInfo: UserInfo) {
         val meeting = meetingRepository.getById(meetingDetailsRequest.meetingGuid)
         if (meeting.userCreatorId != userInfo.userId) {
             throw RuntimeException("Access denied")
@@ -64,6 +66,39 @@ class MeetingService(
         meeting.description = meetingDetailsRequest.description
         meeting.videoConferenceLink = meetingDetailsRequest.videoConferenceLink
         meetingRepository.update(meeting)
+    }
+
+    @Transactional
+    fun updateMeetingParticipants(meetingParticipantsRequest: MeetingParticipantsRequest, userInfo: UserInfo) {
+        val meeting = meetingRepository.getById(meetingParticipantsRequest.meetingGuid)
+        if (meeting.userCreatorId != userInfo.userId) {
+            throw RuntimeException("Access denied")
+        }
+
+        val requestParticipants = meetingParticipantsRequest.participantCalendarIds + userInfo.calendarId
+        val actions = actionRepository.getByActionGuid(meeting.guid)
+        val participantsCalendarIds = actions.map {
+            it.calendarId
+        }
+        val participantsIdToDelete = participantsCalendarIds.filterNot {
+            requestParticipants.contains(it)
+        }
+        val participantsToAdd = requestParticipants.filterNot {
+            participantsCalendarIds.contains(it)
+        }
+
+        val newActions = participantsToAdd
+            .map { participantCalendarId ->
+                Action().also {
+                    it.calendarId = participantCalendarId
+                    it.typeId = actions.first().typeId
+                    it.actionId = meeting.guid
+                }
+            }
+        actionRepository.saveAll(newActions)
+        participantsIdToDelete.forEach {
+            actionRepository.deleteByActionIdAndCalendarId(meeting.guid, it)
+        }
     }
 
     fun getMeetingInfo(meetingGuid: UUID, userInfo: UserInfo): MeetingInfoResponse {
@@ -80,7 +115,7 @@ class MeetingService(
                 UserMeetingInfoResponse(
                     calendarId = pair.first,
                     email = pair.second,
-                    isConfirmed = participantActions.first { //TODO: Как-то не очень, нужно переделать
+                    isConfirmed = participantActions.first {
                         it.calendarId == pair.first
                     }.isConfirmed
                 )

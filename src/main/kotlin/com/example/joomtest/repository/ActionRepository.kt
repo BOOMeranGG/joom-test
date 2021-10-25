@@ -60,4 +60,11 @@ class ActionRepository(
 
         return result != null
     }
+
+    fun deleteByActionIdAndCalendarId(actionId: UUID, calendarId: Int) {
+        dslContext.deleteFrom(ACTION)
+            .where(ACTION.ACTION_ID.eq(actionId))
+            .and(ACTION.CALENDAR_ID.eq(calendarId))
+            .execute()
+    }
 }

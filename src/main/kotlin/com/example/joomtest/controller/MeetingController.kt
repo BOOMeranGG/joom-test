@@ -3,6 +3,7 @@ package com.example.joomtest.controller
 import com.example.joomtest.data.dto.UserInfo
 import com.example.joomtest.data.dto.request.MeetingCreateRequest
 import com.example.joomtest.data.dto.request.MeetingDetailsRequest
+import com.example.joomtest.data.dto.request.MeetingParticipantsRequest
 import com.example.joomtest.data.dto.response.MeetingInfoResponse
 import com.example.joomtest.data.dto.response.MeetingResponse
 import com.example.joomtest.service.MeetingService
@@ -50,7 +51,17 @@ class MeetingController(
     fun updateMeetingDetails(@RequestBody meetingDetails: MeetingDetailsRequest) {
         val userInfo = SecurityContextHolder.getContext().authentication.principal as UserInfo
 
-        meetingService.updateMeetingDetails(meetingDetails, userInfo)
+        meetingService.updateMeetingParticipants(meetingDetails, userInfo)
+    }
+
+    @ApiOperation(
+        value = "Обновление участников встречи"
+    )
+    @PutMapping("/meeting/participants")
+    fun updateMeetingParticipants(@RequestBody request: MeetingParticipantsRequest) {
+        val userInfo = SecurityContextHolder.getContext().authentication.principal as UserInfo
+
+        meetingService.updateMeetingParticipants(request, userInfo)
     }
 
     @ApiOperation(
