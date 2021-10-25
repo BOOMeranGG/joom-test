@@ -27,26 +27,35 @@ class MeetingRepository(
             .guid
     }
 
-    fun getById(guid: UUID): Meeting {
+    fun getById(guid: UUID): Meeting? {
         return dslContext.select()
             .from(MEETING)
             .where(MEETING.GUID.eq(guid))
             .fetchOneInto(Meeting::class.java)
-            ?: throw ServerException(ServerError.NOT_FOUND, "Meeting $guid not found")
+    }
+
+    fun getByIdNotPrivate(guid: UUID): Meeting? {
+        return dslContext.select()
+            .from(MEETING)
+            .where(MEETING.GUID.eq(guid))
+            .and(MEETING.IS_PRIVATE.isFalse)
+            .fetchOneInto(Meeting::class.java)
     }
 
     fun getMeetingsBetweenTimesFromCalendar(
         calendarId: Int,
         timeFrom: OffsetDateTime,
-        timeTo: OffsetDateTime
+        timeTo: OffsetDateTime,
+        isPrivate: Boolean
     ): List<MeetingResponse> {
-        return dslContext.select(MEETING.GUID, MEETING.DATE_TIME_FROM, MEETING.DATE_TIME_TO)
+        return dslContext.select(MEETING.GUID, MEETING.DATE_TIME_FROM, MEETING.DATE_TIME_TO, MEETING.TITLE)
             .from(MEETING) // В ACTION стоит UNIQUE CONSTRAINT (action_id, calendar_id)
             .join(ACTION).on(ACTION.ACTION_ID.eq(MEETING.GUID))
             .where(ACTION.CALENDAR_ID.eq(calendarId))
             .and(MEETING.DATE_TIME_FROM.greaterThan(timeFrom))
             .and(MEETING.DATE_TIME_TO.lessThan(timeTo))
             .and(ACTION.IS_CONFIRMED.isTrue)
+            .and(MEETING.IS_PRIVATE.isFalse)
             .fetch {
                 ActionMeetingMapper.mapRecordToMeetingResponse(it)
             }

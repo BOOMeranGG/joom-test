@@ -8,5 +8,7 @@ data class MeetingCreateRequest(
     val dateTimeTo: OffsetDateTime,
     @get:NotEmpty val participantCalendarIds: List<Int>,
     val description: String,
-    val videoConferenceLink: String
+    val videoConferenceLink: String,
+    val isPrivate: Boolean,
+    val title: String
 )

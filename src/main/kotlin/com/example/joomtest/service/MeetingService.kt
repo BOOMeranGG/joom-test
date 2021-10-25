@@ -42,6 +42,8 @@ class MeetingService(
             it.videoConferenceLink = meetingRequest.videoConferenceLink
             it.dateTimeFrom = meetingRequest.dateTimeFrom
             it.dateTimeTo = meetingRequest.dateTimeTo
+            it.isPrivate = meetingRequest.isPrivate
+            it.title = meetingRequest.title
         })
         val meetingActionTypeId = actionTypeService.getIdByName(ActionType.MEETING.value)
 
@@ -61,6 +63,7 @@ class MeetingService(
     @Transactional
     fun updateMeetingParticipants(meetingDetailsRequest: MeetingDetailsRequest, userInfo: UserInfo) {
         val meeting = meetingRepository.getById(meetingDetailsRequest.meetingGuid)
+            ?: throw ServerException(ServerError.NOT_FOUND, "Meeting ${meetingDetailsRequest.meetingGuid} not found")
         if (meeting.userCreatorId != userInfo.userId) {
             throw ServerException(ServerError.BAD_REQUEST, "Access denied")
         }
@@ -73,6 +76,7 @@ class MeetingService(
     @Transactional
     fun updateMeetingParticipants(meetingParticipantsRequest: MeetingParticipantsRequest, userInfo: UserInfo) {
         val meeting = meetingRepository.getById(meetingParticipantsRequest.meetingGuid)
+            ?: throw ServerException(ServerError.NOT_FOUND, "Meeting ${meetingParticipantsRequest.meetingGuid} not found")
         if (meeting.userCreatorId != userInfo.userId) {
             throw ServerException(ServerError.BAD_REQUEST, "Access denied")
         }
@@ -97,8 +101,8 @@ class MeetingService(
     }
 
     fun getMeetingInfo(meetingGuid: UUID, userInfo: UserInfo): MeetingInfoResponse {
-        val meeting = meetingRepository.getById(meetingGuid)
-        //TODO: Добавить поддержку видимости встреч
+        val meeting = meetingRepository.getByIdNotPrivate(meetingGuid)
+            ?: throw ServerException(ServerError.NOT_FOUND, "Not private meeting $meetingGuid not found")
 
         val participantActions = actionRepository.getByActionGuid(meetingGuid)
         val calendarIdToEmailPairs = userRepository.getCalendarIdToEmailPairs(participantActions.map { it.calendarId })
@@ -106,6 +110,7 @@ class MeetingService(
         return MeetingInfoResponse(
             description = meeting.description,
             videoConferenceLink = meeting.videoConferenceLink,
+            title = meeting.title,
             participantUsersInfo = calendarIdToEmailPairs.map { pair ->
                 UserMeetingInfoResponse(
                     calendarId = pair.first,
@@ -129,7 +134,12 @@ class MeetingService(
             throw ServerException(ServerError.NOT_FOUND, "Calendar with id $calendarId not found")
         }
 
-        val meetingsResponse = meetingRepository.getMeetingsBetweenTimesFromCalendar(calendarId, timeFrom, timeTo)
+        val meetingsResponse = meetingRepository.getMeetingsBetweenTimesFromCalendar(
+            calendarId = calendarId,
+            timeFrom = timeFrom,
+            timeTo = timeTo,
+            isPrivate = true
+        )
         return meetingsResponse
     }
 

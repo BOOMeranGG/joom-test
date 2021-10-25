@@ -23,6 +23,7 @@ object ActionMeetingMapper {
     fun mapRecordToMeetingResponse(record: Record): MeetingResponse {
         return MeetingResponse(
             meetingGuid = record[MEETING.GUID],
+            title = record[MEETING.TITLE],
             dateTimeFrom = record[MEETING.DATE_TIME_FROM],
             dateTimeTo = record[MEETING.DATE_TIME_TO]
         )
