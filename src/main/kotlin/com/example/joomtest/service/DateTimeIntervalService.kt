@@ -12,8 +12,11 @@ class DateTimeIntervalService {
         timeInMinutes: Long,
         fromDateTime: OffsetDateTime?
     ): OffsetDateTime {
-        val mergedBlockedTimes = mergeIntersectionsBlockedTimes(sortedByDateFromAndToActionsTime.distinct())
         val startDate = fromDateTime ?: OffsetDateTime.now().plusMinutes(1)
+        if (sortedByDateFromAndToActionsTime.isEmpty()) {
+            return startDate
+        }
+        val mergedBlockedTimes = mergeIntersectionsBlockedTimes(sortedByDateFromAndToActionsTime.distinct())
 
         val minutesBeforeFirstAction = getMinutesBetweenOffsetDates(startDate, mergedBlockedTimes.first().dateTimeFrom)
         if (minutesBeforeFirstAction >= timeInMinutes) {

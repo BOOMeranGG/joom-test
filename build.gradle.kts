@@ -122,6 +122,9 @@ dependencies {
     // Swagger
     implementation("io.springfox:springfox-boot-starter:3.0.0")
 
+    // Test
+    testImplementation("com.ninja-squad:springmockk:3.0.1")
+    testImplementation("org.jetbrains.kotlin:kotlin-test:1.5.31")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
 }
