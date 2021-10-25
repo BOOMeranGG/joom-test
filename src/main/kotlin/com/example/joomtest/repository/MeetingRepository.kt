@@ -2,6 +2,8 @@ package com.example.joomtest.repository
 
 import com.example.joomtest.data.dto.ActionDateTimeHolder
 import com.example.joomtest.data.dto.response.MeetingResponse
+import com.example.joomtest.data.enum.ServerError
+import com.example.joomtest.exception.ServerException
 import com.example.joomtest.jooq.calendar.Tables.ACTION
 import com.example.joomtest.jooq.calendar.Tables.MEETING
 import com.example.joomtest.jooq.calendar.tables.pojos.Meeting
@@ -30,7 +32,7 @@ class MeetingRepository(
             .from(MEETING)
             .where(MEETING.GUID.eq(guid))
             .fetchOneInto(Meeting::class.java)
-            ?: throw RuntimeException("Meeting $guid not found")
+            ?: throw ServerException(ServerError.NOT_FOUND, "Meeting $guid not found")
     }
 
     fun getMeetingsBetweenTimesFromCalendar(

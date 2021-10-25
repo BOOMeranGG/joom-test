@@ -2,6 +2,8 @@ package com.example.joomtest.service
 
 import com.example.joomtest.data.dto.UserInfo
 import com.example.joomtest.data.dto.response.ActionResponse
+import com.example.joomtest.data.enum.ServerError
+import com.example.joomtest.exception.ServerException
 import com.example.joomtest.mapper.ActionMeetingMapper
 import com.example.joomtest.repository.ActionRepository
 import org.springframework.stereotype.Service
@@ -29,7 +31,7 @@ class ActionService(
         val isUpdateSuccess = actionRepository.setConfirmAction(actionId, userInfo.calendarId, isConfirmed)
 
         if (!isUpdateSuccess) {
-            throw RuntimeException("Action not found")
+            throw ServerException(ServerError.NOT_FOUND, "Action not found")
         }
     }
 }

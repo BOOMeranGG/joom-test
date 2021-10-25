@@ -8,6 +8,8 @@ import com.example.joomtest.data.dto.response.MeetingInfoResponse
 import com.example.joomtest.data.dto.response.MeetingResponse
 import com.example.joomtest.data.dto.response.UserMeetingInfoResponse
 import com.example.joomtest.data.enum.ActionType
+import com.example.joomtest.data.enum.ServerError
+import com.example.joomtest.exception.ServerException
 import com.example.joomtest.jooq.calendar.tables.pojos.Action
 import com.example.joomtest.jooq.calendar.tables.records.MeetingRecord
 import com.example.joomtest.repository.ActionRepository
@@ -32,7 +34,7 @@ class MeetingService(
     @Transactional
     fun createMeeting(meetingRequest: MeetingCreateRequest, userInfo: UserInfo): UUID {
         if (meetingRequest.dateTimeFrom.isAfter(meetingRequest.dateTimeTo)) {
-            throw RuntimeException("DateTimeFrom cannot be after dateTimeTo")
+            throw ServerException(ServerError.BAD_REQUEST, "DateTimeFrom cannot be after dateTimeTo")
         }
         val meetingId = meetingRepository.save(MeetingRecord().also {
             it.userCreatorId = userInfo.userId
@@ -60,7 +62,7 @@ class MeetingService(
     fun updateMeetingParticipants(meetingDetailsRequest: MeetingDetailsRequest, userInfo: UserInfo) {
         val meeting = meetingRepository.getById(meetingDetailsRequest.meetingGuid)
         if (meeting.userCreatorId != userInfo.userId) {
-            throw RuntimeException("Access denied")
+            throw ServerException(ServerError.BAD_REQUEST, "Access denied")
         }
 
         meeting.description = meetingDetailsRequest.description
@@ -72,7 +74,7 @@ class MeetingService(
     fun updateMeetingParticipants(meetingParticipantsRequest: MeetingParticipantsRequest, userInfo: UserInfo) {
         val meeting = meetingRepository.getById(meetingParticipantsRequest.meetingGuid)
         if (meeting.userCreatorId != userInfo.userId) {
-            throw RuntimeException("Access denied")
+            throw ServerException(ServerError.BAD_REQUEST, "Access denied")
         }
 
         val requestParticipants = meetingParticipantsRequest.participantCalendarIds + userInfo.calendarId
@@ -124,7 +126,7 @@ class MeetingService(
         // TODO: Добавить поддержку видимости встреч
         val isCalendarExist = calendarRepository.isExistById(calendarId)
         if (!isCalendarExist) {
-            throw RuntimeException("Calendar with id $calendarId not found")
+            throw ServerException(ServerError.NOT_FOUND, "Calendar with id $calendarId not found")
         }
 
         val meetingsResponse = meetingRepository.getMeetingsBetweenTimesFromCalendar(calendarId, timeFrom, timeTo)

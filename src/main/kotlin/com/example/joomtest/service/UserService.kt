@@ -2,13 +2,14 @@ package com.example.joomtest.service
 
 import com.example.joomtest.data.dto.JwtHolder
 import com.example.joomtest.data.dto.request.UserRequest
+import com.example.joomtest.data.enum.ServerError
+import com.example.joomtest.exception.ServerException
 import com.example.joomtest.jooq.calendar.tables.pojos.User
 import com.example.joomtest.jooq.calendar.tables.records.UserRecord
 import com.example.joomtest.repository.CalendarRepository
 import com.example.joomtest.repository.UserRepository
 import com.example.joomtest.security.JwtTokenProvider
 import com.example.joomtest.util.LOGIN_FAILED_MESSAGE
-import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -22,8 +23,6 @@ class UserService(
     private val passwordEncoder: BCryptPasswordEncoder,
     private val jwtTokenProvider: JwtTokenProvider
 ) {
-
-    private val logger = LoggerFactory.getLogger(javaClass)
 
     @Transactional
     fun register(newUser: UserRequest) {
@@ -44,6 +43,7 @@ class UserService(
             throw BadCredentialsException(LOGIN_FAILED_MESSAGE)
         }
         val calendarId = calendarRepository.findIdByUserId(userPojo.id)
+            ?: throw ServerException(ServerError.NOT_FOUND, "Something went wrong, calendar for user not found")
 
         return jwtTokenProvider.createToken(userPojo, calendarId)
     }
