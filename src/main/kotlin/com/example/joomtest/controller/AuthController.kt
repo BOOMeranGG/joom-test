@@ -7,7 +7,6 @@ import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -33,7 +32,7 @@ class AuthController(
     @ApiOperation(
         value = "Получение токена авторизации"
     )
-    @GetMapping("/login")
+    @PostMapping("/login")
     fun login(@RequestBody @Valid user: UserRequest): ResponseEntity<JwtHolder> {
         return ResponseEntity.ok(userService.login(user))
     }
